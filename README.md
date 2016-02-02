@@ -1,4 +1,4 @@
-# openvpnconfig
+# Easy-VPN
 
 To install the vpn configuration :
 
