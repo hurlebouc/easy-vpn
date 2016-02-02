@@ -1,0 +1,15 @@
+#!/bin/bash
+
+rm -rf jail clientconf
+mkdir jail clientconf
+mkdir jail/tmp
+touch jail/crl.pem
+
+cd easy-rsa
+source ./vars
+./clean-all
+./build-dh
+./pkitool --initca
+./pkitool --server server
+sudo openvpn --genkey --secret keys/ta.key
+

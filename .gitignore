@@ -1,0 +1,4 @@
+clientconf/*
+easy-rsa/keys
+crl.pem
+openvpn-status.log

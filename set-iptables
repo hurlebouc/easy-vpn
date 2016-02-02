@@ -1,0 +1,35 @@
+#!/bin/bash
+
+iptables -F -t nat
+iptables -F
+
+sysctl -w net.ipv4.ip_forward=1
+
+# règles obligatoires pour ouvrir déverrouiller l’accès :
+sudo iptables -I FORWARD -i tun0 -j ACCEPT
+sudo iptables -I FORWARD -o tun0 -j ACCEPT
+sudo iptables -I OUTPUT -o tun0 -j ACCEPT
+
+# autres règles : Translation d'adresses
+
+sudo iptables -A FORWARD -i tun0 -o eth0 -j ACCEPT
+sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+sudo iptables -t nat -A POSTROUTING -s 10.8.0.0/24 -o eth0 -j MASQUERADE
+sudo iptables -t nat -A POSTROUTING -s 10.8.0.2/24 -o eth0 -j MASQUERADE
+
+
+
+ip6tables -F -t nat
+ip6tables -F
+sysctl net.ipv6.conf.all.forwarding=1
+
+# règles obligatoires pour ouvrir déverrouiller l’accès :
+sudo ip6tables -I FORWARD -i tun0 -j ACCEPT
+sudo ip6tables -I FORWARD -o tun0 -j ACCEPT
+sudo ip6tables -I OUTPUT -o tun0 -j ACCEPT
+
+# autres règles : Translation d'adresses
+
+sudo ip6tables -A FORWARD -i tun0 -o eth0 -j ACCEPT
+sudo ip6tables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+sudo ip6tables -t nat -A POSTROUTING -s 2001:41d0:8:7565::1/128 -o eth0 -j MASQUERADE
