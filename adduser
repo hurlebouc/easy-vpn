@@ -10,14 +10,14 @@
 #
 # GPLv3
 #
-# Syntaxe: # sudo ./ovcreateclient.sh <nomduclient>
-#
 VERSION="0.5"
 remote=$(cat remote)
 
 maison=clientconf/$1
-orig=$maison/$1.conf
-origtcp=$maison/$1-tcp.conf
+orig=$1.conf
+origtcp=$1-tcp.conf
+
+mkdir $maison
 
 echo -e "---------------------------------"
 echo -e "openvpn auto createclient v $VERSION"
@@ -33,51 +33,28 @@ fi
 
 cd easy-rsa
 
-echo -e "$createclient $1"
-echo -e $certif1
-echo -e "1) $certif2"
-echo -e "2) $certif3"
-read key
+echo -e "$createclient2 $1"
+source vars
+./build-key $1
 
-case $key in
-	1)
-		echo -e "$createclient2 $1"
-		source vars
-		./build-key $1
-		;;
+cp keys/ca.crt keys/ta.key keys/$1.crt keys/$1.key ../$maison
+cd ../$maison
 
-	2)
-		echo "$createclient3 $1"
-		source vars
-		./build-key-pass $1
-		;;
+cp ../../template.conf $orig
+sed -i "s/PROTO/udp/g"      $orig
+sed -i "s/REMOTE/$remote/g" $orig
+sed -i "s/PORT/1194/g"      $orig
+sed -i "s/CERT/$1.crt/g"    $orig
+sed -i "s/KEY/$1.key/g"     $orig
 
-	*)
-		echo -e $error
-		echo -e $stop
-		exit 0
-		;;
-esac
+cp ../../template.conf $origtcp
+sed -i "s/PROTO/tcp-client/g" $origtcp
+sed -i "s/REMOTE/$remote/g"   $origtcp
+sed -i "s/PORT/11194/g"       $origtcp
+sed -i "s/CERT/$1.crt/g"      $origtcp
+sed -i "s/KEY/$1.key/g"       $origtcp
 
-sudo mkdir $maison
-sudo cp keys/ca.crt keys/ta.key keys/$1.crt keys/$1.key $maison
-cd $maison
-
-cp template.conf $orig
-sed -i "s/PROTO/udp/g"
-sed -i "s/REMOTE/$remote/g"
-sed -i "s/PORT/1194/g"
-sed -i "s/CERT/$1.crt/g"
-sed -i "s/KEY/$1.key/g"
-
-cp template.conf $origtcp
-sed -i "s/PROTO/tcp-client/g"
-sed -i "s/REMOTE/$remote/g"
-sed -i "s/PORT/11194/g"
-sed -i "s/CERT/$1.crt/g"
-sed -i "s/KEY/$1.key/g"
-
-sudo zip $1.zip *.*
+zip $1.zip *.*
 
 echo -e "$createclient $1 $finish"
 echo "$maison/$1.zip" 
