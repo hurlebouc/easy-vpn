@@ -2,8 +2,8 @@
 
 To install the vpn configuration :
 
-    git clone https://github.com/hurlebouc/openvpnconfig.git
-    cp -r openvpnconfig/* /etc/openvpn/
+    git clone https://github.com/hurlebouc/easy-vpn.git
+    cp -r easy-vpn/* /etc/openvpn/
     cd /etc/openvpn
 
 Create all SSL stuffs
