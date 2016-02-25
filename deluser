@@ -2,8 +2,8 @@
 
 cd easy-rsa
 
-source vars
+source vars > /dev/null
 ./revoke-full $1
-cp /etc/openvpn/easy-rsa/keys/crl.pem /etc/openvpn/jail/crl.pem
+cp keys/crl.pem ../jail/crl.pem
 
 rm -rf ../clientconf/$1
